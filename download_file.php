@@ -5,12 +5,12 @@
     }
 
     if(isset($_POST['download_file'])) {
-        $fileName = '/uploads/transitions.json';
+        $fileName = '/uploads/data.json';
         if (file_exists($fileName)) {
             $content = file_get_contents($fileName);
             $ctype = 'application/json';
             header('Content-Type: '.$ctype.'; charset=utf-8');
-            header("Content-Disposition: attachment; filename=transitions.json");
+            header("Content-Disposition: attachment; filename=data.json");
             ob_clean();
             readfile($fileName);
             exit();
@@ -39,5 +39,10 @@
         } else {
             echo 'Некорректный формат файла';
         }
+    }
+
+    if(isset($_POST['elements']) ) {
+        $element_abbr = $_POST['elements'];
+
     }
 ?>
