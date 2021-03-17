@@ -11,7 +11,7 @@
         $res = mysqli_query($link, "SELECT distinct abbr FROM PERIODICTABLE ORDER BY abbr")  or die("Ошибка " . mysqli_error($this->link));
 
         $maxn = $res->num_rows;
-        print "<select name=\"elements\" id='elements'>";
+        print "<select name='elements' id='elements'>";
         print "<option>"."Choose element:"."</option>";
         $r=mysqli_fetch_array($res);
         for($i=0;$i<$maxn;$i++)
@@ -26,15 +26,15 @@
         print "<option>"."Choose ionization:"."</option>";
         print "</select></br></br>";
 
-        print "<select name=\"ionization_potential\">";
+        print "<select name=\"ionization_potencial\" id=\"ionization_potencial\">";
         print "<option>"."Choose ionization potencial:"."</option>";
         print "</select></br></br>";
 
         require_once("close_connection.php");
-        print "</select>";
     ?>
     <input type="submit" name="download_file" value = "Cкачать файл" /></br></br></br>
-    <input type="submit" name="show_kvantofram" value = "Показать квантограмму" /></br></br></br>
+    <input type="submit" name="show_kvantogram" value = "Показать квантограмму" /></br></br></br>
 </form>
+<script src="js/jquery-1.11.2.min.js"></script>
 <script src="js/data_exchange_page.js"></script>
 </body> </html>

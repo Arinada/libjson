@@ -2,7 +2,8 @@
 
     require_once("atoms_data.php");
     $filename = '/uploads/data.json';
-    $atomsData = new AtomData($filename, "H", '0', '109678.7',  $link);
+    //print $_GET['el_abbr'];
+    $atomsData = new AtomData($filename, $_POST['elements'], $_POST['ionization'], $_POST['ionization_potencial'],  $link);
 
     $atomsData->StartWrite();
     $atomsData->GetDataAboutAtomSystem();

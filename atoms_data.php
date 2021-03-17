@@ -7,7 +7,7 @@ class AtomData
       require_once("open_connection.php");
       $this->filename = $filename;
       $this->link = $link;
-      $this->getAtomSystemIds("H", '0', '109678.7');
+      $this->getAtomSystemIds($element_abbr, $ionization, $ionization_potential);
     }
 
     function StartWrite() {
@@ -27,7 +27,7 @@ class AtomData
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
         if($result)
         {
-            echo "Выполнение запроса прошло успешно";
+           // echo "Выполнение запроса прошло успешно";
         }
         $this->writeDataInFile($result);
     }
@@ -53,7 +53,7 @@ class AtomData
     {
         $fields_count = $result->field_count;
         $rows_number = $result->num_rows;
-        echo $rows_number;
+        //echo $rows_number;
         $counter_fields = 0;
         $counter_rows = 0;
         while ($row  = mysqli_fetch_array($result,MYSQLI_ASSOC)) {
@@ -78,14 +78,14 @@ class AtomData
                     ' AND ionization="'.$ionization.'"'.' AND ionization_potencial="'.$ionization_potencial.'"';
         //print $query.'               ';
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
-        if($result)
-        {
-            echo "Выполнение запроса прошло успешно";
-        }
+//        if($result)
+//        {
+//          //  echo "Выполнение запроса прошло успешно";
+//        }
 
         while($row = mysqli_fetch_assoc($result))
         {
-            echo " ID ".$row['id'].', ELEMENT_ID '.$row['id_element'];
+            //echo " ID ".$row['id'].', ELEMENT_ID '.$row['id_element'];
             $this->atom_sys_id = $row['id'];
             $this->element_id = $row['id_element'];
         }
@@ -95,9 +95,9 @@ class AtomData
         $query = 'SELECT * FROM ATOMS WHERE id="'.$this->atom_sys_id.'"';
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
 
-        if($result)
-            echo "Выполнение запроса прошло успешно (atoms) \n";
-        else die("Ошибка привыполнении запроса");
+//        if($result)
+//          //  echo "Выполнение запроса прошло успешно (atoms) \n";
+//        else die("Ошибка привыполнении запроса");
 
         $this->writeDataInFileOneRow($result);
         return $result;
@@ -107,9 +107,9 @@ class AtomData
         $query = 'SELECT * FROM PERIODICTABLE WHERE id="'.$this->element_id.'"';
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
 
-        if($result)
-            echo "Выполнение запроса прошло успешно (periodictable) \n";
-        else die("Ошибка привыполнении запроса");
+//        if($result)
+//          //  echo "Выполнение запроса прошло успешно (periodictable) \n";
+//        else die("Ошибка привыполнении запроса");
 
         fwrite($this->file,  ', "periodictable": {');
         $this->writeDataInFileOneRow($result);
@@ -121,9 +121,9 @@ class AtomData
         $query = 'SELECT * FROM LEVELS WHERE id_atom="' . $this->atom_sys_id . '"';
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
 
-        if ($result)
-            echo "Выполнение запроса прошло успешно (levels)";
-        else die("Ошибка привыполнении запроса");
+//        if ($result)
+//          //  echo "Выполнение запроса прошло успешно (levels)";
+//        else die("Ошибка привыполнении запроса");
 
         if ($result->num_rows == 1){
             fwrite($this->file, ', "levels": {');
@@ -141,9 +141,9 @@ class AtomData
         $query = 'SELECT * FROM TRANSITIONS WHERE id_atom="'.$this->atom_sys_id.'"';
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
 
-        if($result)
-            echo "Выполнение запроса прошло успешно (levels)";
-        else die("Ошибка привыполнении запроса");
+//        if($result)
+//          //  echo "Выполнение запроса прошло успешно (levels)";
+//        else die("Ошибка привыполнении запроса");
 
         if ($result->num_rows == 1){
             fwrite($this->file, ', "transitions": {');
@@ -161,9 +161,9 @@ class AtomData
         $query = 'SELECT * FROM INTERFACE_CONTENT WHERE id="'.$this->atom_sys_id.'"';
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
 
-        if($result)
-            echo "Выполнение запроса прошло успешно (interface_content), строк - ".$result->num_rows;
-        else die("Ошибка привыполнении запроса");
+//        if($result)
+//           // echo "Выполнение запроса прошло успешно (interface_content), строк - ".$result->num_rows;
+//        else die("Ошибка привыполнении запроса");
 
         if ($result->num_rows == 1){
             fwrite($this->file, ', "interface_content": {');

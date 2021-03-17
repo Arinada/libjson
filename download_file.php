@@ -4,7 +4,14 @@
         require_once 'cf.php';
     }
 
-    if(isset($_POST['download_file'])) {
+    if(isset($_POST['download_file']) && isset($_POST['elements']) && isset($_POST['ionization']) && isset($_POST['ionization_potencial']))
+    {
+
+//        $el_abbr = $_POST['elements'];
+//        $ionization = $_POST['ionization'];
+//        $ionization_potencial = $_POST['ionization_potencial'];
+
+        require_once ('take_file_with_one_atom_system_data.php');
         $fileName = '/uploads/data.json';
         if (file_exists($fileName)) {
             $content = file_get_contents($fileName);
@@ -41,8 +48,11 @@
         }
     }
 
-    if(isset($_POST['elements']) ) {
-        $element_abbr = $_POST['elements'];
+//    if(isset($_POST['form']) ) {
+//        echo 'work';
+//        $element_abbr = $_POST['element'];
+//        echo "<script>test($element_abbr);</script>";
+//
+//    }
 
-    }
 ?>
