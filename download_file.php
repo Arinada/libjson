@@ -6,11 +6,6 @@
 
     if(isset($_POST['download_file']) && isset($_POST['elements']) && isset($_POST['ionization']) && isset($_POST['ionization_potencial']))
     {
-
-//        $el_abbr = $_POST['elements'];
-//        $ionization = $_POST['ionization'];
-//        $ionization_potencial = $_POST['ionization_potencial'];
-
         require_once ('take_file_with_one_atom_system_data.php');
         $fileName = '/uploads/data.json';
         if (file_exists($fileName)) {
@@ -25,7 +20,6 @@
             echo "Файл не найден.";
             exit();
         }
-
     }
 
     if (isset($_POST['load_file']) && isset($_FILES['upload_file']) && $_FILES['upload_file']['error'] === UPLOAD_ERR_OK) {
@@ -47,12 +41,5 @@
             echo 'Некорректный формат файла';
         }
     }
-
-//    if(isset($_POST['form']) ) {
-//        echo 'work';
-//        $element_abbr = $_POST['element'];
-//        echo "<script>test($element_abbr);</script>";
-//
-//    }
 
 ?>

@@ -1,16 +1,13 @@
-
     var select_elements = document.getElementById("elements");
     var select_ionization = document.getElementById("ionization");
     var select_ionization_potencial = document.getElementById("ionization_potencial");
 
-    select.addEventListener("change", function(){
+    select_elements.addEventListener("change", function(){
         var index = select_elements.options.selectedIndex;
         var element_abbr = select_elements.options[index].value;
 
-        alert('ddd');
-        $(select_ionization_potencial).remove(); //don't work
-
-        console.log(select_ionization);
+        $(select_ionization_potencial).empty();
+        $(select_ionization_potencial).append('<option value="">Choose ionization potencial:</option>');
         loadIonizationList(element_abbr);
     });
 
@@ -39,7 +36,6 @@
                 console.log(select_ionization);
 
                 $(select_ionization).append('<option value=\"\">Choose ionization:</option>');
-
                 for (var i in data) {
                     var option = document.createElement("option");
                     option.setAttribute("value", data[i]);
@@ -47,7 +43,7 @@
                     select_ionization.appendChild(option);
                 }
                 alert( data[0]);
-                loadIonizationPotencialList(element_abbr, data[0]);
+                //loadIonizationPotencialList(element_abbr, data[0]);
             }
         })
     }
@@ -63,12 +59,16 @@
                 console.log(data);
                 //alert( "success" + element_abbr);
                 $(select_ionization_potencial).empty();
+                $(select_ionization_potencial).append('<option value="">Choose ionization potencial:</option>');
                 console.log(select_ionization_potencial);
                 for (var i in data) {
                     var option = document.createElement("option");
                     option.setAttribute("value", data[i]);
                     option.text = data[i];
                     select_ionization_potencial.appendChild(option);
+                    if(data[i] == null) {
+                        alert('Атомной системы с такими данными нет! Выберите другие параметры!');
+                    }
                 }
 
             }
