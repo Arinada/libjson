@@ -41,7 +41,10 @@ class AtomData
                 $val = addslashes($val);
                 //$val = preg_replace("\n", "\\n", $val);
                 //$val = preg_replace("\n", "\r\n", $val);
-                fwrite( $this->file,'"' . $key . '": "' . $val . '"');
+                if( $val == NULL )
+                    fwrite( $this->file,'"' . $key . '": "NULL"');
+                else
+                    fwrite( $this->file,'"' . $key . '": "' . $val . '"');
                 if($counter != $fields_count-1)
                     fwrite($this->file,  ", ");
                 $counter++;
@@ -60,6 +63,9 @@ class AtomData
             fwrite($this->file,  "{");
             foreach ($row as $key => $val) {
               //  $val = JSON.stringify(addslashes($val));
+                if( $val == null )
+                    fwrite( $this->file,'"' . $key . '": "NULL"');
+                else
                 fwrite( $this->file,'"' . $key . '": "' . $val . '"');
                 if($counter_fields != $fields_count-1)
                     fwrite($this->file,  ", ");

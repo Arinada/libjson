@@ -2,7 +2,7 @@
     <title> Страница для обмена данными </title>
 </head> <body>
 
-<form name="form" action="download_file.php" enctype="multipart/form-data" method="post">
+<form name="form" action="data_exchange_page_logic.php" enctype="multipart/form-data" method="post">
     <input type="file" name="upload_file" title="Выберите файл"/> </br></br>
     <input type="submit" name="load_file" value = "Загрузить файл"/></br></br></br>
 

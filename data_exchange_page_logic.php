@@ -6,7 +6,7 @@
 
     if(isset($_POST['download_file']) && isset($_POST['elements']) && isset($_POST['ionization']) && isset($_POST['ionization_potencial']))
     {
-        require_once ('take_file_with_one_atom_system_data.php');
+        require_once('get_file_with_one_atom_system_data.php');
         $fileName = '/uploads/data.json';
         if (file_exists($fileName)) {
             $content = file_get_contents($fileName);
@@ -40,6 +40,7 @@
         } else {
             echo 'Некорректный формат файла';
         }
+        require_once 'load_data_from_file.php';
     }
 
 ?>

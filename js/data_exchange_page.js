@@ -42,8 +42,6 @@
                     option.text = data[i];
                     select_ionization.appendChild(option);
                 }
-                alert( data[0]);
-                //loadIonizationPotencialList(element_abbr, data[0]);
             }
         })
     }

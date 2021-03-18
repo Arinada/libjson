@@ -1,7 +1,7 @@
 var fs=require('fs');
 var words;
 
-fs.readFile("transitions.json",'utf-8',
+fs.readFile("/uploads/data.json",'utf-8',
     function(error,data){
         console.log("Асинхронное чтение файла");
         if(error) throw error; // если возникла ошибка
