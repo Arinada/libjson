@@ -15,8 +15,16 @@ class AtomData
         fwrite($this->file, '{');
     }
 
+    function WriteMetaData(){
+        fwrite($this->file, '"metadata_common": {');
+        fwrite($this->file, '"inf_system": "Electronic structure of atoms",');
+        $today = date("d/m/Y");
+        fwrite($this->file, ' "create_file_date": "'.$today.'",');
+        fwrite($this->file, ' "data_type": "all atom system"}');
+    }
+
     function EndWrite() {
-        fwrite($this->file, '}');
+        fwrite($this->file, '} }');
         fclose($this->file);
         mysqli_close($this->link);
     }
@@ -38,7 +46,13 @@ class AtomData
         $counter = 0;
         while ($row  = mysqli_fetch_array($result,MYSQLI_ASSOC)) {
             foreach ($row as $key => $val) {
-                $val = addslashes($val);
+                if($key == 'SPECTRUM_IMG')
+                    $val = base64_encode($val);
+                else {
+                    $val = addslashes($val);
+                    $val = str_replace(PHP_EOL, '</br>', $val);
+                    $val = str_replace(' ', '\u0020', $val);
+                }
                 //$val = preg_replace("\n", "\\n", $val);
                 //$val = preg_replace("\n", "\r\n", $val);
                 if( $val == NULL )
@@ -63,6 +77,10 @@ class AtomData
             fwrite($this->file,  "{");
             foreach ($row as $key => $val) {
               //  $val = JSON.stringify(addslashes($val));
+                $val = addslashes($val);
+                $val = str_replace(PHP_EOL, '</br>', $val);
+                $val = str_replace(' ', '\u0020', $val);
+
                 if( $val == null )
                     fwrite( $this->file,'"' . $key . '": "NULL"');
                 else
@@ -98,14 +116,17 @@ class AtomData
     }
 
     function GetDataAboutAtomSystem(){
+
         $query = 'SELECT * FROM ATOMS WHERE id="'.$this->atom_sys_id.'"';
         $result = mysqli_query($this->link, $query) or die("Ошибка " . mysqli_error($this->link));
 
 //        if($result)
 //          //  echo "Выполнение запроса прошло успешно (atoms) \n";
 //        else die("Ошибка привыполнении запроса");
-
+        fwrite($this->file, ', "atom_system": {');
         $this->writeDataInFileOneRow($result);
+        if($result->num_rows > 0)
+            fwrite($this->file, ', ');
         return $result;
     }
 
@@ -117,7 +138,7 @@ class AtomData
 //          //  echo "Выполнение запроса прошло успешно (periodictable) \n";
 //        else die("Ошибка привыполнении запроса");
 
-        fwrite($this->file,  ', "periodictable": {');
+        fwrite($this->file,  '"periodictable": {');
         $this->writeDataInFileOneRow($result);
         fwrite($this->file, '} ');
     }
@@ -179,7 +200,7 @@ class AtomData
         else {
             fwrite($this->file,  ', "interface_content": [');
             $this->writeDataInFileManyRows($result);
-            fwrite($this->file, '] ');
+            fwrite($this->file, ']');
         }
     }
 }

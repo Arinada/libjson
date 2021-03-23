@@ -15,34 +15,20 @@
 
     $data = file_get_contents('/uploads/data.json');
     $data = json_decode($data, true);
-    //////atoms
-    $condition = get_condition_for_select_atoms($atoms_fields, $data);
-    echo $condition;
-    $is_exist = check_if_row_exist($tables[0], $condition, $link);
-    if ($is_exist == true)
-    {
-        echo '<p><font color=red>Data for this atom system is exists!<font/></p>';
-    }
-    else
-    {
-        $fields = get_fields($database, $tables[0], $link);
-        $condition_fields = get_condition_for_insert_fields($tables[0], $fields);
-        $condition_values = get_condition_for_insert_atoms($fields, $data);
-        $query = 'INSERT INTO'.$condition_fields.$condition_values;
-        echo $query.'</br>';
-//        if (mysqli_query($link, $query)) {
-//            echo 'Data has been saved sucessfully!';
-//        } else {
-//            echo "Ошибка: " . $query . "<br>" . mysqli_error($link);
-//        }
-    }
+
+    echo 'periodic '.count($data['periodictable'][0]).' ';
+    echo 'levels '.count($data['levels'][0]).' ';
+    echo 'tran '.count($data['transitions'][0]).' ';
+    echo ' interface '.count($data['interface_content'][0]).' ';
+    //echo $data['LIMITS'];
+
     ///periodictable
     $condition = get_condition_for_select_periodictable($periodictable_fields, $data);
     echo $condition;
     $is_exist = check_if_row_exist($tables[1], $condition, $link);
     if ($is_exist == true)
     {
-        echo '<p><font color=red>Data for this atom system is exists!<font/></p>';
+        echo '<p><font color=red>Data for this atom system is exists!(periodictable)<font/></p>';
     }
     else
     {
@@ -57,7 +43,27 @@
             echo "Ошибка: " . $query . "<br>" . mysqli_error($link);
         }
     }
-
+    //////atoms
+    $condition = get_condition_for_select_atoms($atoms_fields, $data);
+    //echo $condition;
+    $is_exist = check_if_row_exist($tables[0], $condition, $link);
+    if ($is_exist == true)
+    {
+        echo '<p><font color=red>Data for this atom system is exists!(atoms)<font/></p>';
+    }
+    else
+    {
+        $fields = get_fields($database, $tables[0], $link);
+        $condition_fields = get_condition_for_insert_fields($tables[0], $fields);
+        $condition_values = get_condition_for_insert_atoms($fields, $data);
+        $query = 'INSERT INTO'.$condition_fields.$condition_values;
+        //echo $query.'</br>';
+        if (mysqli_query($link, $query)) {
+            echo 'Data has been saved sucessfully!';
+        } else {
+            echo "Ошибка: " . $query . "<br>" . mysqli_error($link);
+        }
+    }
 
     function get_condition_for_select_atoms($fields, $json_a)
     {
@@ -84,10 +90,20 @@
         $condition = ' VALUES( ';
         //echo 'arr_size'.$ar_size;
         foreach ($fields as $field_name) {
-            if($json_a[$field_name] == 'NULL')
-                $condition = $condition.' '.$json_a[$field_name];
-            else
-                $condition = $condition.' \''. $json_a[$field_name].'\'';
+            $val = $json_a[$field_name];
+            if($val == 'NULL')
+                $condition = $condition.' '.$val;
+            else {
+                if($field_name == 'SPECTRUM_IMG') {
+                    $val = base64_decode($val);
+                    $val = addslashes($val);
+                }
+                else {
+                    $val = $val = str_replace('</br>', PHP_EOL, $val);
+                    $val = str_replace('\u0020', ' ', $val);
+                }
+                    $condition = $condition . ' \'' . $val . '\'';
+            }
             if($counter_fields != $ar_size-1)
                 $condition = $condition. ' , ';
             $counter_fields++;
@@ -103,7 +119,7 @@
         $condition = '';
         //echo 'arr_size'.$ar_size;
         foreach ($fields as $field_name) {
-            if($json_a[$field_name] == 'NULL')
+            if($json_a['periodictable'][$field_name] == 'NULL')
                 $condition = $condition.' '.$field_name . ' is ' . $json_a['periodictable'][$field_name];
             else
                 $condition = $condition.' '.$field_name . '=\'' . $json_a['periodictable'][$field_name].'\'';
@@ -121,10 +137,14 @@
         $condition = ' VALUES( ';
         //echo 'arr_size'.$ar_size;
         foreach ($fields as $field_name) {
-            if($json_a[$field_name] == 'NULL')
-                $condition = $condition.' '.$json_a['periodictable'][$field_name];
-            else
-                $condition = $condition.' \''. $json_a['periodictable'][$field_name].'\'';
+            $val = $json_a['periodictable'][$field_name];
+            if($val == 'NULL')
+                $condition = $condition.' '.$val;
+            else {
+                $val = str_replace( '</br>', PHP_EOL, $val);
+                $val = str_replace('\u0020', ' ', $val);
+                $condition = $condition . ' \'' . $val . '\'';
+            }
             if($counter_fields != $ar_size-1)
                 $condition = $condition. ' , ';
             $counter_fields++;

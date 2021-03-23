@@ -6,10 +6,11 @@
     $atomsData = new AtomData($filename, $_POST['elements'], $_POST['ionization'], $_POST['ionization_potencial'],  $link);
 
     $atomsData->StartWrite();
+    $atomsData->WriteMetaData();
     $atomsData->GetDataAboutAtomSystem();
     $atomsData->GetDataAboutPeriodicTable();
     $atomsData->GetDataAboutLevels();
     $atomsData->GetDataAboutTransitions();
-    $atomsData->GetDataAboutInterfaceContent();
+    //$atomsData->GetDataAboutInterfaceContent();
     $atomsData->EndWrite();
 
