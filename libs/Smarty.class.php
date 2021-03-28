@@ -1,5 +1,4 @@
 <?php
- $php_handling = SMARTY_PHP_ALLOW ;
 /**
  * Project:     Smarty: the PHP compiling template engine
  * File:        Smarty.class.php

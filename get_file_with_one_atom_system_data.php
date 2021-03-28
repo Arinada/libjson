@@ -1,9 +1,10 @@
 <?php
 
     require_once("atoms_data.php");
-    $filename = '/uploads/data.json';
-    //print $_GET['el_abbr'];
-    $atomsData = new AtomData($filename, $_POST['elements'], $_POST['ionization'], $_POST['ionization_potencial'],  $link);
+    $el_abbr = $_POST['elements'];
+    $ionization = $_POST['ionization'];
+    $filename = '/uploads/'.$el_abbr.' '.$ionization.'.json';
+    $atomsData = new AtomData($filename, $el_abbr, $ionization, $_POST['ionization_potencial']);
 
     $atomsData->StartWrite();
     $atomsData->WriteMetaData();

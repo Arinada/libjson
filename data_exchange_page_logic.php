@@ -7,14 +7,16 @@
     if(isset($_POST['download_file']) && isset($_POST['elements']) && isset($_POST['ionization']) && isset($_POST['ionization_potencial']))
     {
         require_once('get_file_with_one_atom_system_data.php');
-        $fileName = '/uploads/data.json';
-        if (file_exists($fileName)) {
-            $content = file_get_contents($fileName);
+        $fileName = $_POST['elements'].' '.$_POST['ionization'].'.json';
+        $filePath = '/uploads/'.$fileName;
+        if (file_exists($filePath)) {
+            $content = file_get_contents($filePath);
             $ctype = 'application/json';
             header('Content-Type: '.$ctype.'; charset=utf-8');
-            header("Content-Disposition: attachment; filename=data.json");
+            header("Content-Disposition: attachment; filename=".$fileName);
             ob_clean();
-            readfile($fileName);
+            readfile($filePath);
+            unlink($filePath);
             exit();
         } else {
             echo "Файл не найден.";
