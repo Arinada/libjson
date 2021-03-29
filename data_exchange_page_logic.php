@@ -35,6 +35,8 @@
             //проверка на валидность json файла
             if (move_uploaded_file($fileTmpPath, $fileFullName)) {
                 require_once 'load_data_from_file.php';
+                $load= new LoadData();
+                $load->LoadDataForOneAtomSystem($fileFullName);
                 echo "Загруженный файл: " . $fileName . "</br>";
                 echo "Размер: " . $fileSize . "байт";
             } else {
