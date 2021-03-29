@@ -5,17 +5,16 @@
     $transitions_fields = array('ID_ATOM', 'ID_UPPER_LEVEL', 'ID_LOWER_LEVEL', 'WAVELENGTH', 'PROBABILITY', 'OSCILLATOR_F', 'CROSSECTION', 'INTENSITY');
     $interface_content_fields = array();
     $tables = array('ATOMS', 'PERIODICTABLE', 'LEVELS', 'TRANSITIONS', 'INTERFACE_CONTENT');
-    require_once 'open_connection.php';
 
     $data = file_get_contents('/uploads/data.json');
     $data = json_decode($data, true);
 
-
-    echo 'periodic '.count($data['atom_system']['periodictable']).' ';
-    echo 'levels '.count($data['atom_system']['levels']).' ';
-    echo 'tran '.count($data['atom_system']['transitions']).' ';
-    echo ' interface '.count($data['atom_system']['interface_content']).' <br/>';
-
+//    проверка количества полей
+//    echo 'periodic '.count($data['atom_system']['periodictable']).' ';
+//    echo 'levels '.count($data['atom_system']['levels']).' ';
+//    echo 'tran '.count($data['atom_system']['transitions']).' ';
+//    echo ' interface '.count($data['atom_system']['interface_content']).' <br/>';
+    require_once 'open_connection.php';
     $atom_id = get_max_id('ATOMS', $link)+1;
     $periodictable_id = get_max_id('PERIODICTABLE', $link) + 1;
     //echo 'atom_id '.$atom_id.'</br>';
@@ -28,6 +27,7 @@
     load_data($database, $data, $tables[2], $link, $levels_fields, $atom_id);
     //transitions
     load_data($database, $data, $tables[3], $link, $transitions_fields, $atom_id);
+    require_once 'close_connection.php';
 
     function load_data ($database, $data, $table, $link, $fields_array, $id)
     {
@@ -38,27 +38,18 @@
             //echo 'elements counter '.$elements_counter;
             for ($element_number = 0; $element_number < $elements_counter; $element_number++) {
                 $condition = get_condition_for_select2($fields_array, $data, $table, $element_number, $id);
-                $is_exist = check_if_row_exist($table, $condition, $link);
-                if ($is_exist == true) {
-                    echo '<p><font color=red>Data for this atom system is exists!(atoms)<font/></p>';
-                    return;
-                } else {
-                    $query = get_query2($database, $table, $data, $link, $element_number, $id);
-                    insert_row($link, $query);
-                }
+                check_if_row_exist($table, $condition, $link);
+                $query = get_query2($database, $table, $data, $link, $element_number, $id);
+                execute_query($link, $query);
             }
         } else {
             $table_name = strtolower($table);
             $condition = get_condition_for_select($fields_array, $data, $table_name, $id);
-            $is_exist = check_if_row_exist($table_name, $condition, $link);
-            if ($is_exist == true) {
-                echo '<p><font color=red>Data for this atom system is exists!(atoms)<font/></p>';
-                return;
-            } else {
-                $query = get_query($database, $table, $link, $data, $id);
-                //echo $query.'</br>';
-                insert_row($link, $query);
-            }
+            check_if_row_exist($table_name, $condition, $link);
+            $query = get_query($database, $table, $link, $data, $id);
+            //echo $query.'</br>';
+            execute_query($link, $query);
+
         }
     }
 
@@ -66,18 +57,13 @@
     {
         $condition = get_condition_for_select_atoms($atoms_fields, $data, $periodictable_id);
         //echo $condition;
-        $is_exist = check_if_row_exist($table_name, $condition, $link);
-        if ($is_exist == true) {
-            echo '<p><font color=red>Data for this atom system is exists!(atoms)<font/></p>';
-            return;
-        } else {
-            $fields = get_fields($database, $table_name, $link);
-            $condition_fields = get_condition_for_insert_fields($table_name, $fields);
-            $condition_values = get_condition_for_insert_atoms($fields, $data, $periodictable_id, $atom_id);
-            $query = 'INSERT INTO' . $condition_fields . $condition_values;
-            echo $query.'</br>';
-            insert_row($link, $query);
-        }
+        check_if_row_exist($table_name, $condition, $link);
+        $fields = get_fields($database, $table_name, $link);
+        $condition_fields = get_condition_for_insert_fields($table_name, $fields);
+        $condition_values = get_condition_for_insert_atoms($fields, $data, $periodictable_id, $atom_id);
+        $query = 'INSERT INTO' . $condition_fields . $condition_values;
+        echo $query.'</br>';
+        execute_query($link, $query);
     }
 
     //for nested elements
@@ -99,12 +85,14 @@
         return $query;
     }
 
-    function insert_row($link, $query) {
-        if (mysqli_query($link, $query)) {
-            echo '</br>Data has been saved sucessfully!</br>';
-        } else {
-            echo "Ошибка: " . $query . "<br>" . mysqli_error($link);
-        }
+    function execute_query($link, $query) {
+//        if (mysqli_query($link, $query)) {
+//            echo '</br>Data has been saved sucessfully!</br>';
+//        } else {
+//            echo "Ошибка: " . $query . "<br>" . mysqli_error($link);
+//        }
+        $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
+        return $result;
     }
 
     function get_condition_for_select_atoms($fields, $json_a, $id_periodictable)
@@ -278,11 +266,12 @@
     function check_if_row_exist($table_name, $condition, $link)
     {
         $query_check = 'Select count(*) from '.$table_name.' where '.$condition;
-        $result = mysqli_query($link, $query_check) or die("Ошибка " . mysqli_error($link));
+        $result = execute_query($link, $query_check);
         $row = mysqli_fetch_array($result);
         //echo 'existion '.$row[0];
-        if( $row[0] > 0 )
-            return true;
+        if( $row[0] > 0 ) 
+            //echo 'Data for this atom system is exists!(atoms)';
+            die('Data for this atom system is exists!(atoms)</br>'.$query_check);
         else
             return false;
     }
@@ -295,6 +284,7 @@
         else
             return false;
     }
+
     function count_elements($data, $table_name)
     {
         $elements_counter = count($data['atom_system'][$table_name]);
@@ -302,34 +292,23 @@
     }
 
     function get_fields($database, $table_name, $link){
-        //$fields = mysqli_list_fields($database, $table_name, $link); don't work
-       // $columns = mysqli_num_fields($fields);
-
         $query = "SHOW COLUMNS FROM ".$table_name;
-        $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
+        $result = execute_query($link, $query);
         $fields_names = array();
         $counter = 0;
 
         while ($row  = mysqli_fetch_array($result,MYSQLI_ASSOC)) {
-
             $fields_names[$counter] = $row['Field'];
-            //echo $row['Field'].'  ';
             $counter++;
         }
 
-//        for ($i = 0; $i < $columns; $i++) {
-//            $fields_names[$i] = mysqli_field_name($fields, $i);
-//            echo mysqli_field_name($fields, $i) . "\n";
-//        }
         return $fields_names;
     }
 
     function get_max_id($table_name, $link){
         $query = 'SELECT MAX(ID) as id FROM '.$table_name;
-        $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
+        $result = execute_query($link, $query);
         $row  = mysqli_fetch_array($result,MYSQLI_ASSOC);
         //echo 'id  '.$row['id'].'  </br>';
         return $row['id'];
     }
-
-    require_once 'close_connection.php';

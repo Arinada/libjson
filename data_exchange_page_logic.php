@@ -34,6 +34,7 @@
         if ($fileExtension == "json") {
             //проверка на валидность json файла
             if (move_uploaded_file($fileTmpPath, $fileFullName)) {
+                require_once 'load_data_from_file.php';
                 echo "Загруженный файл: " . $fileName . "</br>";
                 echo "Размер: " . $fileSize . "байт";
             } else {
