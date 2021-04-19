@@ -47,6 +47,12 @@ fclose($fileToWrite);
 $fileToWriteTransitions = fopen('/uploads/transitions1.json', 'wb');
 writeDataAboutTransitionsWithLevels($data, $all_transitions_fields, $fileToWriteTransitions, $levels_fields);
 fclose($fileToWriteTransitions);
+//levels.json
+//function getLevelsDataFile() {
+//$query = "SELECT LEVELS.* , dbo.ConcatSourcesID(ID,'L') AS SOURCE_IDS FROM LEVELS WHERE  ID_ATOM='$element_id' ORDER BY ENERGY asc";
+$fileToWriteLevels = fopen('/uploads/levels1.json', 'wb');
+writeDataAboutLevels($data, $all_levels_fields, $fileToWriteLevels);
+fclose($fileToWriteLevels);
 
 //$ar_periodictable = getAtomsValue($dataFileName, $atoms_fields, $fileToWrite);
 //$ar_atoms = getDataAboutAtoms($atoms_fields, $periodictable_fields, $dataFileName);
@@ -99,6 +105,44 @@ function writeDataForOneElement($type_name, $data, $fields, $file){
             fwrite($file,  ", ");
         $counter++;
     }
+}
+
+function writeDataAboutLevels($data, $fields, $file)
+{
+    $fields_count = count($fields);
+    $elements_number = count($data['atom_system']['levels']);
+    $config = null;
+    $counter = 0;
+    print $fields_count;
+    if ($elements_number > 1)
+        fwrite($file, '[');
+    for ($element_number = 0; $element_number < $elements_number; $element_number++) {
+        fwrite($file, '{');
+        foreach ($fields as $field_name) {
+            $val = $data['atom_system']['levels'][$element_number][$field_name];
+            $val = addslashes($val);
+            $val = str_replace(PHP_EOL, '</br>', $val);
+            $val = str_replace(' ', '\u0020', $val);
+            $val = preg_replace('[\t]', '\u0445', $val); //u0445
+            if($field_name == 'CONFIG')
+                $config = $val;
+            if ($val == null || $val == "NULL")
+                fwrite($file, '"' . $field_name . '": null');
+            else
+                fwrite($file, '"' . $field_name . '": "' . $val . '"');
+            if ($counter != $fields_count - 1)
+                fwrite($file, ", ");
+            $counter++;
+        }
+        $counter = 0;
+        $config_type = getConfigType($config);
+        fwrite($file, ', "SOURCE_IDS": null,"config_type": "'.$config_type.'" ');
+        fwrite($file, '}');
+        if ($elements_number > 1 && $element_number != $elements_number - 1)
+            fwrite($file, ',');
+    }
+    if($elements_number >  1)
+        fwrite($file, ']');
 }
 
 function writeDataAboutTransitionsWithLevels($data, $fields, $file, $levels_fields){
@@ -171,7 +215,7 @@ function writeLevelValues($data, $id, $file, $fields, $type)
 {
     $fields_count = count($fields);
     $elements_number = count($data['atom_system']['levels']);
-    $wavelength = null;
+    $config = null;
     $counter = 0;
     //print '</br>' . $elements_number;
     $element_number = 0;
@@ -187,6 +231,8 @@ function writeLevelValues($data, $id, $file, $fields, $type)
                 $val = str_replace(' ', '\u0020', $val);
                 $val = preg_replace('[\t]', '\u0445', $val); //u0445
                 //print '</br>' . $val;
+                if($field_name == 'CONFIG')
+                    $config = $val;
                 if ($type == 'upper_level')
                     $field_name = 'upper_level_' . strtolower($field_name);
                 if ($type == 'lower_level')
@@ -199,8 +245,10 @@ function writeLevelValues($data, $id, $file, $fields, $type)
                     fwrite($file, ", ");
                 $counter++;
             }
-            if($type == 'upper_level')
-                fwrite($file, ', "upper_level_config_type": "np"');
+            if($type == 'upper_level') {
+                $config_type = getConfigType($config);
+                fwrite($file, ', "upper_level_config_type": "' . $config_type . '" ');
+            }
             break;
         }
     }
@@ -253,6 +301,33 @@ function getFieldsValue($dataFileName, $fields, $type_name, $fileToWrite){
     }
 
     return $values;
+}
+
+function getConfigType($config)
+{
+//        $items = $this->GetItemsArray();
+        $config_type = null;
+        if ($config == "(?)") $config = "?";
+
+        //убираем с конца конфигурации, j и терма незначащие символы, такие как '?', ', "
+        $config = preg_replace('/^(.*?)([^a-zA-Z\}\)]*)$/', '$1', $config);
+
+        //убираем ~{...} c конца конфигурации
+        $config = preg_replace('/^(.*)(~\{[^\{\}]*\})$/', '$1', $config);
+        //убираем последнюю букву из конфигурации, если их там две
+        $config = preg_replace('/^(.*[a-zA-Z])[a-zA-Z]$/', '$1', $config);
+
+        //если заканчивается на @{число}, то в CELLCONFIG копируем CONFIG %@{%}
+        //если не заканчивается на @{число}, то в CELLCONFIG заносим CONFIG с заменой последнего числа на 'n'
+        $config_type = $config;
+
+        if (!preg_match('/^(.*@\{.*\})$/', $config)) {
+            if (preg_match('/^(.*?)(\d+)([a-z])$/', $config))
+                $config_type = preg_replace('/^(.*?)(\d+)([a-z])$/', '$1n$3', $config);
+        }
+        if ($config == null || $config == '')
+            $config_type = $config = '?';
+        return $config_type;
 }
 
 function getAtomsValue($data, $fields, $fileToWrite){
