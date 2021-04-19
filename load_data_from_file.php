@@ -152,6 +152,8 @@ class LoadData
                 else {
                     $val = $val = str_replace('</br>', PHP_EOL, $val);
                     $val = str_replace('\u0020', ' ', $val);
+                    //$val = preg_replace('\u0445', ' ',  $val);
+                    $val = preg_replace('\u0445', '\t',  $val);
                 }
                 $condition = $condition . ' \'' . $val . '\'';
             }
@@ -222,6 +224,8 @@ class LoadData
                 else {
                     $val = str_replace('</br>', PHP_EOL, $val);
                     $val = str_replace('\u0020', ' ', $val);
+                    //$val = preg_replace('\u0445', ' ',  $val);
+                    $val = preg_replace('\u0445', '\t',  $val);
                 }
                 $condition = $condition . ' \'' . $val . '\'';
             }
@@ -252,6 +256,8 @@ class LoadData
                 else {
                     $val = str_replace('</br>', PHP_EOL, $val);
                     $val = str_replace('\u0020', ' ', $val);
+                    //$val = preg_replace('\u0445', ' ',  $val);
+                    $val = preg_replace('\u0445', '\t',  $val);
                 }
                 $condition = $condition . ' \'' . $val . '\'';
             }
@@ -291,7 +297,7 @@ class LoadData
             return false;
     }
 
-    private function CheckIfHasNestedElements($table_name)
+    public function CheckIfHasNestedElements($table_name)
     {
         $elements_counter = count($this->data['atom_system'][$table_name][0]);
         if ($elements_counter > 0)
@@ -300,13 +306,13 @@ class LoadData
             return false;
     }
 
-    private function CountElements($table_name)
+    public function CountElements($table_name)
     {
         $elements_counter = count($this->data['atom_system'][$table_name]);
         return $elements_counter;
     }
 
-    private function GetFields($table_name, $link)
+    public function GetFields($table_name, $link)
     {
         $query = "SHOW COLUMNS FROM " . $table_name;
         $result = $this->ExecuteQuery($link, $query);

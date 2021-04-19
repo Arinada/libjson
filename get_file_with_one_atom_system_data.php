@@ -12,6 +12,6 @@
     $atomsData->GetDataAboutPeriodicTable();
     $atomsData->GetDataAboutLevels();
     $atomsData->GetDataAboutTransitions();
-    //$atomsData->GetDataAboutInterfaceContent();
+    $atomsData->GetDataAboutInterfaceContent();
     $atomsData->EndWrite();
 

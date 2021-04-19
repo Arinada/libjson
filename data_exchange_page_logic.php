@@ -1,7 +1,7 @@
 <?php
 
     if(isset($_POST['show_kvantogram'])) {
-        downloadFileWithData();
+       // downloadFileWithData();
         require_once 'cf.php';
     }
 

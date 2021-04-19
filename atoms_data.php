@@ -52,9 +52,8 @@ class AtomData
                     $val = addslashes($val);
                     $val = str_replace(PHP_EOL, '</br>', $val);
                     $val = str_replace(' ', '\u0020', $val);
+                    $val = preg_replace('[\t]', '\u0445', $val); //u0445
                 }
-                //$val = preg_replace("\n", "\\n", $val);
-                //$val = preg_replace("\n", "\r\n", $val);
                 if( $val == NULL )
                     fwrite( $this->file,'"' . $key . '": "NULL"');
                 else
