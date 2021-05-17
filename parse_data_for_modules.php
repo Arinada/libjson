@@ -124,6 +124,7 @@ function writeDataAboutLevels($data, $fields, $file)
             $val = str_replace(PHP_EOL, '</br>', $val);
             $val = str_replace(' ', '\u0020', $val);
             $val = preg_replace('[\t]', '\u0445', $val); //u0445
+            $val = preg_replace('[\n]', '</br>', $val);
             if($field_name == 'CONFIG')
                 $config = $val;
             if ($val == null || $val == "NULL")
@@ -164,6 +165,7 @@ function writeDataAboutTransitionsWithLevels($data, $fields, $file, $levels_fiel
             $val = str_replace(PHP_EOL, '</br>', $val);
             $val = str_replace(' ', '\u0020', $val);
             $val = preg_replace('[\t]', '\u0445', $val); //u0445
+            $val = preg_replace('[\n]', '</br>', $val);
             if($field_name == 'WAVELENGTH')
                 $wavelength = $val;
             if ($field_name == 'ID_UPPER_LEVEL')
@@ -230,6 +232,7 @@ function writeLevelValues($data, $id, $file, $fields, $type)
                 $val = str_replace(PHP_EOL, '</br>', $val);
                 $val = str_replace(' ', '\u0020', $val);
                 $val = preg_replace('[\t]', '\u0445', $val); //u0445
+                $val = preg_replace('[\n]', '</br>', $val);
                 //print '</br>' . $val;
                 if($field_name == 'CONFIG')
                     $config = $val;

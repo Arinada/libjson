@@ -16,7 +16,6 @@ class LoadData
 //    echo 'levels '.count($this->data['atom_system']['levels']).' ';
 //    echo 'tran '.count($this->data['atom_system']['transitions']).' ';
 //    echo 'tran2 '.count($this->data['atom_system']).' '.' <br/>';
-
         require_once 'open_connection.php';
         $atom_id = $this->GetMaxId('ATOMS', $link) + 1;
         $periodictable_id = $this->GetMaxId('PERIODICTABLE', $link) + 1;
@@ -38,13 +37,34 @@ class LoadData
 
     private function DataIsJson(){
         $this->data = json_decode($this->data, true);
-        if (json_last_error() !== JSON_ERROR_NONE)
-            die('Incorrect json format');
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            switch (json_last_error()) {
+                case JSON_ERROR_DEPTH:
+                    echo ' - Достигнута максимальная глубина стека';
+                    break;
+                case JSON_ERROR_STATE_MISMATCH:
+                    echo ' - Некорректные разряды или несоответствие режимов';
+                    break;
+                case JSON_ERROR_CTRL_CHAR:
+                    echo ' - Некорректный управляющий символ';
+                    break;
+                case JSON_ERROR_SYNTAX:
+                    echo ' - Синтаксическая ошибка, некорректный JSON';
+                    break;
+                case JSON_ERROR_UTF8:
+                    echo ' - Некорректные символы UTF-8, возможно неверно закодирован';
+                    break;
+                default:
+                    echo ' - Неизвестная ошибка';
+                    break;
+            }
+            die('. Incorrect json format');
+        }
     }
 
     private function ParseAndLoadData( $table, $link, $fields_array, $id)
     {
-        $has_nested_elements = $this->CheckIfHasNestedElements(strtolower($table));
+        $has_nested_elements = $this->CheckIfHasFewNestedElements(strtolower($table));
 
         if ($has_nested_elements) {
             $elements_counter = $this->CountElements(strtolower($table));
@@ -139,6 +159,8 @@ class LoadData
         //echo 'arr_size'.$ar_size;
         foreach ($fields as $field_name) {
             $val = $this->data['atom_system'][$field_name];
+            if($val == null)
+                echo  'Can\'t find element by this key!<br>';
             if ($val == 'NULL')
                 $condition = $condition . ' NULL';
             else {
@@ -153,7 +175,8 @@ class LoadData
                     $val = $val = str_replace('</br>', PHP_EOL, $val);
                     $val = str_replace('\u0020', ' ', $val);
                     //$val = preg_replace('\u0445', ' ',  $val);
-                    $val = preg_replace('\u0445', '\t',  $val);
+                    $val = preg_replace('\u0445', '[\t]',  $val);
+                    $val = preg_replace('</br>', '[\n]', $val);
                 }
                 $condition = $condition . ' \'' . $val . '\'';
             }
@@ -257,7 +280,9 @@ class LoadData
                     $val = str_replace('</br>', PHP_EOL, $val);
                     $val = str_replace('\u0020', ' ', $val);
                     //$val = preg_replace('\u0445', ' ',  $val);
-                    $val = preg_replace('\u0445', '\t',  $val);
+                    $val = preg_replace('\u0445', '[\t]',  $val);
+                    $val = preg_replace('</br>', '[\n]', $val);
+
                 }
                 $condition = $condition . ' \'' . $val . '\'';
             }
@@ -297,7 +322,7 @@ class LoadData
             return false;
     }
 
-    public function CheckIfHasNestedElements($table_name)
+    public function CheckIfHasFewNestedElements($table_name)
     {
         $elements_counter = count($this->data['atom_system'][$table_name][0]);
         if ($elements_counter > 0)

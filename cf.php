@@ -10,3 +10,7 @@ $levels = file_get_contents('Z:\uploads\levels1.json');
 $smarty->assign('levels_json', $levels);
 
 $smarty->display('view_cf.tpl');
+
+//unlink('Z:\uploads\atoms1.json');
+//unlink('Z:\uploads\transitions1.json');
+//unlink('Z:\uploads\levels1.json');
