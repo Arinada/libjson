@@ -9,10 +9,12 @@
  <input type="submit" name="load_file" value = "Загрузить файл"  />
  <input type="submit" name="download_file" value = "Cкачать файл" /></br></br>
  <input type="submit" name="show_kvantogram" value = "Показать квантограмму" /></br></br>
- <p>Elements</p>
- <select name="Element name's" value="Elements"/>
- <p>Ionization</p>
- <select name="Ionization list" value="Ionization"/>
+ <select name="elements" id="univer">
+  {php}
+     require_once("test.php");
+
+  {/php}
+ </select><br>
 </form>
 </body>
 </html>

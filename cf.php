@@ -1,12 +1,14 @@
 <?php
 require_once 'initialize_smarty.php';
+require_once 'get_data_for_modules.php';
+$get_data_for_modules = new GetDataForModules();
 
-$atom_sys = file_get_contents('Z:\uploads\atoms.json');
-$smarty->assign('atom_json', $atom_sys);
-$transitions = file_get_contents('Z:\uploads\transitions.json');
-$smarty->assign('transitions_json',$transitions);
-
-$levels = file_get_contents('Z:\uploads\levels.json');
-$smarty->assign('levels_json',$levels);
+$smarty->assign('atom_json', $get_data_for_modules->GetDataAboutAtoms());
+$smarty->assign('transitions_json', $get_data_for_modules->GetDataAboutTransitionsWithLevels());
+$smarty->assign('levels_json', $get_data_for_modules->GetDataAboutLevels());
 
 $smarty->display('view_cf.tpl');
+
+unlink('Z:\uploads\atoms.json');
+unlink('Z:\uploads\transitions.json');
+unlink('Z:\uploads\levels.json');
