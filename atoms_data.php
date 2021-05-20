@@ -1,12 +1,16 @@
 <?php
+require_once("open_connection.php");
+require_once ("close_connection.php");
+
 class AtomData
 {
     private $atom_sys_id, $element_id, $filename, $link, $file;
 
     function __construct($filename, $element_abbr, $ionization, $ionization_potential) {
-      require_once("open_connection.php");
+      $connection = new Connection();
+      $connection->OpenConnection();
       $this->filename = $filename;
-      $this->link = $link;
+      $this->link = $connection->link;
       $this->GetAtomSystemIds($element_abbr, $ionization, $ionization_potential);
     }
 

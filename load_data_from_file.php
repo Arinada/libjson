@@ -16,7 +16,9 @@ class LoadData
 //    echo 'levels '.count($this->data['atom_system']['levels']).' ';
 //    echo 'tran '.count($this->data['atom_system']['transitions']).' ';
 //    echo 'tran2 '.count($this->data['atom_system']).' '.' <br/>';
-        require_once 'open_connection.php';
+        $conn = new Connection();
+        $conn->OpenConnection();
+        $link = $conn->link;
         $atom_id = $this->GetMaxId('ATOMS', $link) + 1;
         $periodictable_id = $this->GetMaxId('PERIODICTABLE', $link) + 1;
         if($this->CountElements(strtolower($this->tables[1]))>0 AND count($this->data['atom_system'])>0) {
@@ -32,10 +34,10 @@ class LoadData
                 $this->ParseAndLoadData($this->tables[3], $link, $this->transitions_fields, $atom_id);
         }else
             echo 'Invalid structure of file!';
-        require_once 'close_connection.php';
+        close_connection($link);
     }
 
-    private function DataIsJson(){
+    public function DataIsJson(){
         $this->data = json_decode($this->data, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             switch (json_last_error()) {
@@ -122,11 +124,7 @@ class LoadData
 
     private function ExecuteQuery($link, $query)
     {
-//        if (mysqli_query($link, $query)) {
-//            echo '</br>Data has been saved sucessfully!</br>';
-//        } else {
-//            echo "Ошибка: " . $query . "<br>" . mysqli_error($link);
-//        }
+       // print_r(gettype($link));
         $result = mysqli_query($link, $query) or die("Ошибка " . mysqli_error($link));
         return $result;
     }

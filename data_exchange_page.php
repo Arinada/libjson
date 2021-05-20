@@ -8,7 +8,10 @@
 
     <?php
         require_once("open_connection.php");
-        $res = mysqli_query($link, "SELECT distinct abbr FROM PERIODICTABLE ORDER BY abbr")  or die("Ошибка " . mysqli_error($this->link));
+        require_once("close_connection.php");
+        $conn = new Connection();
+        $conn->OpenConnection();
+        $res = mysqli_query($conn->link, "SELECT distinct abbr FROM PERIODICTABLE ORDER BY abbr")  or die("Ошибка " . mysqli_error($conn->link));
 
         $maxn = $res->num_rows;
         print "<select name='elements' id='elements'>";
@@ -19,7 +22,7 @@
             $r=mysqli_fetch_array($res);
             print "<option>".$r['abbr']."</option>";
         }
-        require_once("close_connection.php");
+        close_connection($conn->link);
         print "</select></br></br>";
 
         print "<select name=\"ionization\" id='ionization'>";
@@ -29,11 +32,11 @@
         print "<select name=\"ionization_potencial\" id=\"ionization_potencial\">";
         print "<option>"."Choose ionization potencial:"."</option>";
         print "</select></br></br>";
-
-        require_once("close_connection.php");
     ?>
     <input type="submit" name="download_file" value = "Cкачать файл" /></br></br></br>
-    <input type="submit" name="show_kvantogram" value = "Показать квантограмму" /></br></br></br>
+    <input type="submit" name="show_kvantogram" value = "Показать квантограмму" /></br></br>
+    <input type="submit" name="levels_table" value = " Показать таблицу уровней " /></br></br>
+    <input type="submit" name="transitions_table" value = "Показать таблицу переходов" /></br></br>
 </form>
 <script src="js/jquery-1.11.2.min.js"></script>
 <script src="js/data_exchange_page.js"></script>
